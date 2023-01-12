@@ -5,7 +5,7 @@ module Dev
   module Commands
     class Clone < Dev::Command
       def call(args, _name)
-        raise(Abort, 'one arg required') unless args.size == 1
+        raise(Abort, 'one arg required') unless args.size == 1 || args.size == 2
         arg = args.first
         repo = if arg =~ %r{.*/.*}
           arg
@@ -14,7 +14,12 @@ module Dev
         end
         target = File.expand_path("~/src/github.com/#{repo}")
         FileUtils.mkdir_p(File.dirname(target))
-        stat = CLI::Kit::System.system('git', 'clone', "https://github.com/#{repo}", target)
+        if args.size == 2
+          branch = args.fetch(1)
+          stat = CLI::Kit::System.system('git', 'clone', "-b#{branch}", "https://github.com/#{repo}", target)
+        else
+          stat = CLI::Kit::System.system('git', 'clone', "https://github.com/#{repo}", target)
+        end
         raise(Abort, "clone failed") unless stat.success?
         IO.new(9).puts("chdir:#{target}")
       end
