@@ -23,5 +23,6 @@
       '';
     };
     packages.x86_64-linux.default = self.packages.x86_64-linux.minidev;
+    homeModules.default = import ./modules/minidev-hm.nix self;
   };
 }
